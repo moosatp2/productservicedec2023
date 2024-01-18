@@ -1,6 +1,7 @@
 package com.example.productservicedec2023.services;
 
 import com.example.productservicedec2023.dtos.FakeStoreProductDto;
+import com.example.productservicedec2023.exceptions.productNotExistsException;
 import com.example.productservicedec2023.models.Category;
 import com.example.productservicedec2023.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,19 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product getSingleProduct(Long id) {
+    public Product getSingleProduct(Long id) throws productNotExistsException {
+//        int a = 1/0;
         FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject(
                 "https://fakestoreapi.com/products/" + id,
                 FakeStoreProductDto.class
         );
+
+        if ( fakeStoreProductDto == null ){
+            throw new productNotExistsException(
+                    "product with id" + id + "not exist"
+            );
+
+        }
         return convertFakeStoreProductToProduct(fakeStoreProductDto);
     }
 
@@ -77,5 +86,27 @@ public class FakeStoreProductService implements ProductService{
         FakeStoreProductDto fakeStoreProductDto1 =  restTemplate.execute( "https://fakestoreapi.com/products/"+ id, HttpMethod.PUT, requestCallback, responseExtractor);
 
         return convertFakeStoreProductToProduct(fakeStoreProductDto1);
+    }
+
+    @Override
+    public Product addProduct(Product product) {
+
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+
+        fakeStoreProductDto.setId(product.getId());
+        fakeStoreProductDto.setTitle(product.getTitle());
+        fakeStoreProductDto.setPrice(product.getPrice());
+        fakeStoreProductDto.setDescription(product.getDescription());
+        fakeStoreProductDto.setImageUrl(product.getImageUrl());
+
+        restTemplate.postForEntity("https://fakestoreapi.com/products", fakeStoreProductDto, FakeStoreProductDto.class);
+        return convertFakeStoreProductToProduct(fakeStoreProductDto);
+    }
+
+    @Override
+    public Product deleteProduct(Long id) {
+
+        restTemplate.delete("https://fakestoreapi.com/products/{id}");
+        return null;
     }
 }

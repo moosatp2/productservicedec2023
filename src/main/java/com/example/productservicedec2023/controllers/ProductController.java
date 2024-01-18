@@ -1,5 +1,7 @@
 package com.example.productservicedec2023.controllers;
 
+import com.example.productservicedec2023.dtos.FakeStoreProductDto;
+import com.example.productservicedec2023.exceptions.productNotExistsException;
 import com.example.productservicedec2023.models.Product;
 import com.example.productservicedec2023.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,28 +21,32 @@ public class ProductController {
 
     @Autowired
     public ProductController (ProductService productService){
+
         this.productService = productService;
     }
 
     @GetMapping()
     public ResponseEntity<List<Product>> getAllProducts(){
 
-        ResponseEntity<List<Product>> response = new ResponseEntity<>(
+        ResponseEntity<List<Product>> responseGetAll = new ResponseEntity<>(
                 productService.getAllProducts(), HttpStatus.ALREADY_REPORTED);
-        return response;
+        return responseGetAll;
 
     }
 
     @GetMapping("/{id}" )
-    public Product getSingleProduct(@PathVariable ("id") Long id ){
-        return productService.getSingleProduct(id);
+    public ResponseEntity<Product> getSingleProduct(@PathVariable ("id") Long id ) throws productNotExistsException {
+
+        ResponseEntity<Product> responseGet = new
+                ResponseEntity<>(productService.getSingleProduct(id), HttpStatus.OK);
+        return responseGet;
     }
 
     @PostMapping()
-    public Product addNewProduct(@RequestBody Product product){
-        Product p = new Product();
-        p.setTitle("a new product");
-        return p;
+    public ResponseEntity<Product> addNewProduct(@RequestBody Product product){
+        ResponseEntity responsePost =
+                new ResponseEntity(productService.addProduct(product), HttpStatus.OK);
+        return responsePost;
     }
 
     @PatchMapping("/{id}")
@@ -57,5 +63,6 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable("id") Long id) {
+
     }
 }
