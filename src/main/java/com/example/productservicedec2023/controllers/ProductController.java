@@ -1,16 +1,14 @@
 package com.example.productservicedec2023.controllers;
-
-import com.example.productservicedec2023.dtos.FakeStoreProductDto;
 import com.example.productservicedec2023.exceptions.productNotExistsException;
 import com.example.productservicedec2023.models.Product;
 import com.example.productservicedec2023.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,11 +16,12 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
-
+    private RestTemplate restTemplate;
     @Autowired
-    public ProductController (ProductService productService){
+    public ProductController (@Qualifier("selfProductService") ProductService productService, RestTemplate restTemplate){
 
         this.productService = productService;
+        this.restTemplate = restTemplate;
     }
 
     @GetMapping()
