@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -28,7 +29,7 @@ public class ProductController {
     public ResponseEntity<List<Product>> getAllProducts(){
 
         ResponseEntity<List<Product>> responseGetAll = new ResponseEntity<>(
-                productService.getAllProducts(), HttpStatus.ALREADY_REPORTED);
+                productService.getAllProducts(), HttpStatus.OK);
         return responseGetAll;
 
     }
@@ -50,18 +51,19 @@ public class ProductController {
 
     @PatchMapping("/{id}")
     public Product updateProduct(@PathVariable("id") Long id, @RequestBody Product product){
-        return new Product();
+        return productService.updateProduct(id, product);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> replaceProduct(@PathVariable("id") Long id, @RequestBody Product product) {
 
-        ResponseEntity responsePut = new ResponseEntity( productService.replaceProduct(id,product) , HttpStatus.NOT_FOUND);
+        ResponseEntity responsePut = new ResponseEntity( productService.updateProduct(id,product) , HttpStatus.NOT_FOUND);
         return responsePut;
     }
 
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable("id") Long id) {
+        productService.deleteProduct(id);
 
     }
 }

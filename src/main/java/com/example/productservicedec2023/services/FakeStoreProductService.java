@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
@@ -69,7 +70,7 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product replaceProduct(Long id, Product product) {
+    public Product updateProduct(Long id, Product product) {
 
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
 
@@ -104,9 +105,9 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product deleteProduct(Long id) {
+    public void deleteProduct(Long id) {
 
         restTemplate.delete("https://fakestoreapi.com/products/{id}");
-        return null;
+
     }
 }
