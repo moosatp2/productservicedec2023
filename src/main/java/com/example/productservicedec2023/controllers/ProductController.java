@@ -1,4 +1,5 @@
 package com.example.productservicedec2023.controllers;
+import com.example.productservicedec2023.commons.AuthenticationCommons;
 import com.example.productservicedec2023.exceptions.productNotExistsException;
 import com.example.productservicedec2023.models.Product;
 import com.example.productservicedec2023.services.ProductService;
@@ -18,15 +19,23 @@ public class ProductController {
 
     private ProductService productService;
     private RestTemplate restTemplate;
+    private AuthenticationCommons authenticationCommons;
     @Autowired
-    public ProductController (@Qualifier("selfProductService") ProductService productService, RestTemplate restTemplate){
+    public ProductController (@Qualifier("selfProductService") ProductService productService,
+                              RestTemplate restTemplate, AuthenticationCommons authenticationCommons ){
 
         this.productService = productService;
         this.restTemplate = restTemplate;
+        this.authenticationCommons = authenticationCommons;
     }
 
     @GetMapping()
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<Product>> getAllProducts(@RequestHeader("AuthToken") String authToken){
+
+        if(authenticationCommons.validateToken(authToken) == false){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
 
         ResponseEntity<List<Product>> responseGetAll = new ResponseEntity<>(
                 productService.getAllProducts(), HttpStatus.OK);
